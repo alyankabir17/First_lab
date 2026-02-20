@@ -1,0 +1,38 @@
+pipeline {
+    agent { label 'local-agent' } // Tells Jenkins to run on your specific linux agent
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // This pulls your code from GitHub automatically
+                checkout scm
+            }
+        }
+        stage('Environment Check') {
+            steps {
+                echo 'Checking system info...'
+                sh 'uname -a'
+                sh 'python3 --version'
+            }
+        }
+        stage('Run Script') {
+            steps {
+                echo 'Running your main python script...'
+                // Using python3 as we discovered earlier
+                sh 'python3 jenkins.py'
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo 'Build process finished.'
+        }
+        success {
+            echo 'The Python script executed perfectly!'
+        }
+        failure {
+            echo 'Something went wrong. Check the console logs.'
+        }
+    }
+}
