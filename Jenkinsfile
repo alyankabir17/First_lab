@@ -10,15 +10,28 @@ pipeline {
         // Adds a timestamp to every line in the console log
         timestamps()
     }
-
+    tools{
+        maven 'Maven'
+        gradle 'Gradle'
+        jdk 'Jdk'
+    }
+    parameters {
+        string(name:'' ,defaultValue: '', description: '')
+        choice(name:'' ,choices :['',''] , description: '')
+        booleanparam(name:'executeTests' ,defaultValue: '', description: '')
     stages {
         stage('Source Control') {
+            
             steps {
                 checkout scm
             }
         }
 
         stage('Automated Testing') {
+            when {
+                expression {
+                    params.executeTests
+                }
             steps {
                 echo 'Running Quality Assurance tests...'
                 sh 'python3 app_test.py'
@@ -31,6 +44,7 @@ pipeline {
                 // This creates a folder and "hosts" your file
                 sh 'mkdir -p /home/alyan/www/html'
                 sh 'cp index.html /home/alyan/www/html/'
+                echo " deploying version ${params.VERSION} "
             }
         }
         stage('Example') {
