@@ -44,6 +44,7 @@ pipeline {
     post {
         success {
             echo 'Pipeline finished successfully!'
+            cleanWs()
         }
         failure {
             echo 'Pipeline failed. Please check the specific stage logs.'
