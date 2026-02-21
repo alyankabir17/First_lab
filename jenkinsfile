@@ -9,6 +9,12 @@ pipeline {
         }
 
         stage('Testing') {
+            when{
+                expression{
+                    BRANCH_NAME='main'
+                }
+
+            }
             steps {
                 echo 'Performing Syntax Check...'
                 // This checks if the python code is valid without actually running the full script
@@ -44,44 +50,4 @@ pipeline {
         }
     }
 }
-
-
-
-pipeline{
-
-    agent any
-    stages{
-        stage("build") {
-            steps{
-                echo(" building the application...")
-            }
-        }
-    
-
-        stage("test") {
-            steps{
-            echo("testing the application...")
-            }
-        }
-    
-
-        stage("deploy") {
-            steps{
-            echo(" deploying the application...")
-            }
-        }
-    }
-    post{
-        always {
-        // execute some logic after all th stages
-    }
-        success {
-        // execute some logic after build succeed
-    }
-        failure {
-        // execute some logic after build failed
-    }
-}
-}
-
 
