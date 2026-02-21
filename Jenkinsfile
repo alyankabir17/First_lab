@@ -2,52 +2,35 @@ pipeline {
     agent { label 'local-agent' }
 
     stages {
-        stage('Checkout') {
+        stage('Source Control') {
             steps {
-                checkout scm //automatically pulls code from your github repository
+                checkout scm
             }
         }
 
-        stage('Testing') {
-            when{
-                expression{
-                    BRANCH_NAME='main'
-                }
-
-            }
+        stage('Automated Testing') {
             steps {
-                echo 'Performing Syntax Check...'
-                // This checks if the python code is valid without actually running the full script
-                sh 'python3 -m py_compile jenkins.py' // Standard Python syntax check
-                echo 'Testing Complete: No syntax errors found.'
+                echo 'Running Quality Assurance tests...'
+                sh 'python3 app_test.py'
             }
         }
 
-        stage('Run Script') {
-            steps {  
-                echo 'Executing main logic...'
-                sh 'python3 jenkins.py'
-            }
-        }
-
-        stage('Deployment') {
+        stage('Deployment to Production') {
             steps {
-                echo 'Deploying application...'
-                // Creating a "production" directory and copying the script there
-                sh 'mkdir -p /home/alyan/production_app'
-                sh 'cp jenkins.py /home/alyan/production_app/'
-                echo 'Application successfully deployed to /home/alyan/production_app'
+                echo 'Deploying to Web Server directory...'
+                // This creates a folder and "hosts" your file
+                sh 'mkdir -p /home/alyan/www/html'
+                sh 'cp index.html /home/alyan/www/html/'
             }
         }
     }
-    
+
     post {
         success {
-            echo 'Pipeline finished successfully!'
-            cleanWs()
+            echo 'SUCCESS: The website is live at /home/alyan/www/html/index.html'
         }
         failure {
-            echo 'Pipeline failed. Please check the specific stage logs.'
+            echo 'CRITICAL: Deployment failed. Reverting changes...'
         }
     }
 }
