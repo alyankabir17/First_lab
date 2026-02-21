@@ -1,5 +1,15 @@
 pipeline {
     agent { label 'local-agent' }
+    options {
+        // Keeps only the last 10 builds and deletes anything older than 7 days
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '5', daysToKeepStr: '7'))
+        
+        // Prevents multiple builds of the same job from running at the same time
+        disableConcurrentBuilds()
+        
+        // Adds a timestamp to every line in the console log
+        timestamps()
+    }
 
     stages {
         stage('Source Control') {
@@ -21,6 +31,11 @@ pipeline {
                 // This creates a folder and "hosts" your file
                 sh 'mkdir -p /home/alyan/www/html'
                 sh 'cp index.html /home/alyan/www/html/'
+            }
+        }
+        stage('Example') {
+            steps {
+                echo 'Cleaning up build history automatically...'
             }
         }
     }
